@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="com-jernung-plugin-billing"
+        version="0.1.0">
+
+  <name>Billing Plugin</name>
+  <description>A cordova plugin for in-app billing.</description>
+  <author>Jernung, LLC</author>
+  <license>MIT</license>
+  <keywords>cordova,billing</keywords>
+
+  <engines>
+    <engine name="cordova" version=">=6.0.0" />
+  </engines>
+
+  <js-module src="www/billing.js" name="BillingPlugin">
+    <clobbers target="plugins.billing" />
+  </js-module>
+
+  <platform name="android">
+
+    <dependency id="com-jernung-plugin-promise" url="https://github.com/mcfarljw/cordova-plugin-promise" />
+
+    <config-file target="config.xml" parent="/*">
+      <feature name="BillingPlugin" >
+        <param name="android-package" value="com.jernung.plugins.billing.BillingPlugin" />
+        <param name="onload" value="true" />
+      </feature>
+    </config-file>
+
+    <source-file src="src/android/BillingPlugin.java" target-dir="src/com/jernung/plugins/billing" />
+    <source-file src="src/android/IInAppBillingService.aidl" target-dir="src/com/android/vending/billing" />
+
+  </platform>
+
+</plugin>
