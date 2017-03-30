@@ -28,6 +28,10 @@
       </feature>
     </config-file>
 
+    <config-file target="AndroidManifest.xml" parent="/manifest">
+      <uses-permission android:name="android.permission.BILLING" />
+    </config-file>
+
     <source-file src="src/android/BillingPlugin.java" target-dir="src/com/jernung/plugins/billing" />
     <source-file src="src/android/IInAppBillingService.aidl" target-dir="src/com/android/vending/billing" />
 
