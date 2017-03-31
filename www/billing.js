@@ -22,5 +22,12 @@ module.exports = {
         exec(resolve, reject, 'BillingPlugin', 'makePurchase', [productId, productType]);
       }
     );
+  },
+  on: function (eventName) {
+    return new Promise(
+      function (resolve, reject) {
+        exec(resolve, reject, 'BillingPlugin', 'on', [eventName]);
+      }
+    );
   }
 };

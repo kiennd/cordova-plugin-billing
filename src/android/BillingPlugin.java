@@ -18,6 +18,7 @@ import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaWebView;
 
+import org.apache.cordova.PluginResult;
 import org.chromium.content.app.ContentApplication;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,6 +42,8 @@ public class BillingPlugin extends CordovaPlugin implements ServiceConnection {
     private static final int BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED = 7;
     private static final int BILLING_RESPONSE_RESULT_ITEM_NOT_OWNED = 8;
 
+    private PluginResult mActivityResult;
+    private CallbackContext mActivityContext;
     private IInAppBillingService mService;
 
     @Override
@@ -71,6 +74,11 @@ public class BillingPlugin extends CordovaPlugin implements ServiceConnection {
             return true;
         }
 
+        if ("on".equals(action)) {
+            callbackContext = mActivityContext;
+            return true;
+        }
+
         return false;
     }
 
@@ -94,23 +102,31 @@ public class BillingPlugin extends CordovaPlugin implements ServiceConnection {
 
     }
 
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (requestCode == 1001) {
-//            int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
-//            String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
-//            String purchaseSignature= data.getStringExtra("INAPP_DATA_SIGNATURE");
-//
-//            if (resultCode == Activity.RESULT_OK) {
-//                try {
-//                    JSONObject jo = new JSONObject(purchaseData);
-//                    String sku = jo.getString("productId");
-//                } catch (JSONException error) {
-//                    error.printStackTrace();
-//                }
-//            }
-//        }
-//    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1001) {
+            int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
+            String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+            String purchaseSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
+            PluginResult result;
+
+            if (resultCode == Activity.RESULT_OK) {
+                try {
+                    JSONObject jo = new JSONObject(purchaseData);
+                    String sku = jo.getString("productId");
+
+                    result = new PluginResult(PluginResult.Status.OK, 'ok');
+                } catch (JSONException error) {
+                    result = new PluginResult(PluginResult.Status.ERROR, 'error');
+                    error.printStackTrace();
+                }
+
+                result.setKeepCallback(true);
+
+                this.mActivityContext.sendPluginResult(result);
+            }
+        }
+    }
 
     private JSONObject getProduct(String productId, String productType) {
         JSONObject result = new JSONObject();
