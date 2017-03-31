@@ -115,9 +115,9 @@ public class BillingPlugin extends CordovaPlugin implements ServiceConnection {
                     JSONObject jo = new JSONObject(purchaseData);
                     String sku = jo.getString("productId");
 
-                    result = new PluginResult(PluginResult.Status.OK, 'ok');
+                    result = new PluginResult(PluginResult.Status.OK, "ok");
                 } catch (JSONException error) {
-                    result = new PluginResult(PluginResult.Status.ERROR, 'error');
+                    result = new PluginResult(PluginResult.Status.ERROR, "error");
                     error.printStackTrace();
                 }
 
