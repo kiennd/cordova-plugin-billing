@@ -32,26 +32,26 @@ public class BillingPlugin extends CordovaPlugin implements ServiceConnection {
 
     private static final String PLUGIN_NAME = "BillingPlugin";
 
-    private static final int BILLING_RESPONSE_RESULT_OK = 0;
-    private static final int BILLING_RESPONSE_RESULT_USER_CANCELED = 1;
-    private static final int BILLING_RESPONSE_RESULT_SERVICE_UNAVAILABLE = 2;
-    private static final int BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE = 3;
-    private static final int BILLING_RESPONSE_RESULT_ITEM_UNAVAILABLE = 4;
-    private static final int BILLING_RESPONSE_RESULT_DEVELOPER_ERROR = 5;
-    private static final int BILLING_RESPONSE_RESULT_ERROR = 6;
-    private static final int BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED = 7;
-    private static final int BILLING_RESPONSE_RESULT_ITEM_NOT_OWNED = 8;
-
-    private PluginResult mActivityResult;
     private CallbackContext mActivityContext;
     private IInAppBillingService mService;
+
+    //    private static final int BILLING_RESPONSE_RESULT_OK = 0;
+    //    private static final int BILLING_RESPONSE_RESULT_USER_CANCELED = 1;
+    //    private static final int BILLING_RESPONSE_RESULT_SERVICE_UNAVAILABLE = 2;
+    //    private static final int BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE = 3;
+    //    private static final int BILLING_RESPONSE_RESULT_ITEM_UNAVAILABLE = 4;
+    //    private static final int BILLING_RESPONSE_RESULT_DEVELOPER_ERROR = 5;
+    //    private static final int BILLING_RESPONSE_RESULT_ERROR = 6;
+    //    private static final int BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED = 7;
+    //    private static final int BILLING_RESPONSE_RESULT_ITEM_NOT_OWNED = 8;
 
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
 
-        // bind billing service to the vending package
         Log.d(PLUGIN_NAME, "binding package to service");
+
+        // bind billing service to the vending package
         Intent mServiceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
         mServiceIntent.setPackage("com.android.vending");
         cordova.getActivity().bindService(mServiceIntent, this, ContentApplication.BIND_AUTO_CREATE);
@@ -70,12 +70,8 @@ public class BillingPlugin extends CordovaPlugin implements ServiceConnection {
         }
 
         if ("makePurchase".equals(action)) {
-            callbackContext.success(makePurchase(args.getString(0), args.getString(1)));
-            return true;
-        }
-
-        if ("on".equals(action)) {
-            callbackContext = mActivityContext;
+            callbackContext.sendPluginResult(makePurchase(args.getString(0), args.getString(1)));
+            mActivityContext = callbackContext;
             return true;
         }
 
@@ -110,21 +106,31 @@ public class BillingPlugin extends CordovaPlugin implements ServiceConnection {
             String purchaseSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
             PluginResult result;
 
+            Log.d(PLUGIN_NAME, "response code: " + responseCode);
+
             if (resultCode == Activity.RESULT_OK) {
                 try {
-                    JSONObject jo = new JSONObject(purchaseData);
-                    String sku = jo.getString("productId");
-
-                    result = new PluginResult(PluginResult.Status.OK, "ok");
+                    JSONObject purchaseObject = new JSONObject(purchaseData);
+                    purchaseObject.put("responseCode", responseCode);
+                    result = new PluginResult(PluginResult.Status.OK, purchaseObject);
                 } catch (JSONException error) {
-                    result = new PluginResult(PluginResult.Status.ERROR, "error");
+                    result = new PluginResult(PluginResult.Status.ERROR, error.getMessage());
                     error.printStackTrace();
                 }
-
-                result.setKeepCallback(true);
-
-                this.mActivityContext.sendPluginResult(result);
+            } else {
+                try {
+                    JSONObject purchaseObject = new JSONObject();
+                    purchaseObject.put("responseCode", responseCode);
+                    result = new PluginResult(PluginResult.Status.OK, purchaseObject);
+                } catch (JSONException error) {
+                    result = new PluginResult(PluginResult.Status.ERROR, error.getMessage());
+                    error.printStackTrace();
+                }
             }
+
+            result.setKeepCallback(true);
+
+            mActivityContext.sendPluginResult(result);
         }
     }
 
@@ -196,8 +202,8 @@ public class BillingPlugin extends CordovaPlugin implements ServiceConnection {
         return result;
     }
 
-    private JSONObject makePurchase(String productId, String productType) {
-        JSONObject result = new JSONObject();
+    private PluginResult makePurchase(String productId, String productType) {
+        PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
         String packageName = cordova.getActivity().getPackageName();
         Bundle purchaseBundle;
         PendingIntent pendingIntent;
@@ -217,10 +223,12 @@ public class BillingPlugin extends CordovaPlugin implements ServiceConnection {
                 Log.d(PLUGIN_NAME, "already purchased product");
             }
         } catch (RemoteException error) {
-            return result;
+            return new PluginResult(PluginResult.Status.ERROR, error.getMessage());
         } catch (IntentSender.SendIntentException error) {
-            return result;
+            return new PluginResult(PluginResult.Status.ERROR, error.getMessage());
         }
+
+        result.setKeepCallback(true);
 
         return result;
     }
