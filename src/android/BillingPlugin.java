@@ -3,6 +3,7 @@ package com.jernung.plugins.billing;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
@@ -19,7 +20,6 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaWebView;
 
 import org.apache.cordova.PluginResult;
-import org.chromium.content.app.ContentApplication;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,7 +54,7 @@ public class BillingPlugin extends CordovaPlugin implements ServiceConnection {
         // bind billing service to the vending package
         Intent mServiceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
         mServiceIntent.setPackage("com.android.vending");
-        cordova.getActivity().bindService(mServiceIntent, this, ContentApplication.BIND_AUTO_CREATE);
+        cordova.getActivity().bindService(mServiceIntent, this, Context.BIND_AUTO_CREATE);
     }
 
     @Override
