@@ -29,7 +29,7 @@
     </config-file>
 
     <config-file target="AndroidManifest.xml" parent="/manifest">
-      <uses-permission android:name="android.permission.BILLING" />
+      <uses-permission android:name="com.android.vending.BILLING" />
     </config-file>
 
     <source-file src="src/android/BillingPlugin.java" target-dir="src/com/jernung/plugins/billing" />
