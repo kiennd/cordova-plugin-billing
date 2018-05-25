@@ -1,19 +1,19 @@
 {
-  "name": "cordova-plugin-billing",
+  "name": "kiennd-cordova-plugin-billing",
   "version": "0.1.0",
   "description": "A cordova plugin for in-app billing.",
   "author": "Joshua McFarland",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mcfarljw/cordova-plugin-billing"
+    "url": "https://github.com/kiennd/cordova-plugin-billing"
   },
   "keywords": [
     "cordova",
     "billing"
   ],
   "cordova": {
-    "id": "cordova-plugin-billing",
+    "id": "kiennd-cordova-plugin-billing",
     "platforms": [
       "android"
     ]
