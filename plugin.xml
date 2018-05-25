@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-        id="com-jernung-plugin-billing"
+        id="kiennd-cordova-plugin-billing"
         version="0.1.0">
 
   <name>Billing Plugin</name>
@@ -19,7 +19,7 @@
 
   <platform name="android">
 
-    <dependency id="com-jernung-plugin-promise" url="https://github.com/mcfarljw/cordova-plugin-promise" />
+    <dependency id="kiennd-cordova-plugin-promise" url="https://github.com/kiennd/cordova-plugin-promise" />
 
     <config-file target="config.xml" parent="/*">
       <feature name="BillingPlugin" >
